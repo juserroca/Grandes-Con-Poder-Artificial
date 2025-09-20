@@ -1,0 +1,16 @@
+{% extends "mlapp/base.html" %}
+{% block content %}
+<h2 class="text-center text-info">Subir CSV para entrenar o predecir</h2>
+<form method="post" enctype="multipart/form-data" class="p-3 bg-gradient rounded shadow">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Ejecutar</button>
+</form>
+
+{% if result %}
+<div class="mt-4">
+  <h3>Resultados</h3>
+  {{ result|safe }}
+</div>
+{% endif %}
+{% endblock %}

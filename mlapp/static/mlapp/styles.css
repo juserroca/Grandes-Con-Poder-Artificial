@@ -1,0 +1,19 @@
+body {
+  background: radial-gradient(circle at top, #0d1b2a, #000000);
+  font-family: 'Orbitron', sans-serif;
+}
+
+h2,
+h3 {
+  text-shadow: 0 0 10px #00b4d8, 0 0 20px #0077b6;
+}
+
+form {
+  background: rgba(10, 25, 47, 0.9);
+  border: 1px solid #0077b6;
+}
+
+.table {
+  background: #001233;
+  color: #e0fbfc;
+}

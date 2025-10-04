@@ -189,7 +189,7 @@ df_features, features_disponibles = seleccionar_features(df_prep)
 # ETAPA 5: MANEJO DE VALORES FALTANTES
 # ============================================================================
 
-def manejar_valores_faltantes(df, estrategia='median', umbral_columna=0.01):
+def manejar_valores_faltantes(df, estrategia='knn', umbral_columna=0.2):
     """
     Maneja valores faltantes en el dataset.
     

@@ -1,106 +1,73 @@
-# 🌌 Grandes-Con-Poder-Artificial 🚀
+# Welcome to your Lovable project
 
-Bienvenido a **MLApp**, una aplicación en **Django + Machine Learning** que te permite cargar datasets en CSV y realizar dos acciones principales:
+## Project info
 
-- 🔄 **Reentrenar un modelo**
-- 🔮 **Predecir con datos nuevos**
+**URL**: https://lovable.dev/projects/e3c8acb5-4078-4cc9-b692-477027bb7f20
 
----
+## How can I edit this code?
 
-## ✨ Características
+There are several ways of editing your application.
 
-- 📂 Carga de archivos CSV mediante un formulario amigable
-- 🧠 Entrenamiento y reentrenamiento de modelos de ML
-- 🔎 Predicción sobre nuevos datos
-- 🎨 Interfaz web sencilla con Django Templates
+**Use Lovable**
 
----
+Simply visit the [Lovable Project](https://lovable.dev/projects/e3c8acb5-4078-4cc9-b692-477027bb7f20) and start prompting.
 
-## ⚙️ Instalación
+Changes made via Lovable will be committed automatically to this repo.
 
-1. Clona este repositorio:
+**Use your preferred IDE**
 
-```bash
-git clone https://github.com/juserroca/Grandes-Con-Poder-Artificial.git
-cd mlapp
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
 
-2. Crea y activa un entorno virtual:
+**Edit a file directly in GitHub**
 
-```bash
-conda create -n astro-ml python=3.13 -y
-conda activate astro-ml
-```
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-3. Instala las dependencias:
+**Use GitHub Codespaces**
 
-```bash
-pip install -r requirements.txt
-```
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-4. Realiza las migraciones de Django:
+## What technologies are used for this project?
 
-```bash
-python manage.py migrate
-```
+This project is built with:
 
-5. Inicia el servidor:
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-```bash
-python manage.py runserver
-```
+## How can I deploy this project?
 
----
+Simply open [Lovable](https://lovable.dev/projects/e3c8acb5-4078-4cc9-b692-477027bb7f20) and click on Share -> Publish.
 
-## 📊 Uso
+## Can I connect a custom domain to my Lovable project?
 
-1. Abre en tu navegador [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-2. Carga un archivo CSV con tus datos
-3. Selecciona una acción:
-   - 🔄 **Reentrenar modelo**
-   - 🔮 **Predecir**
-4. Obtén los resultados directamente en la web 🎉
+Yes, you can!
 
----
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-## 📂 Estructura del proyecto
-
-```
-mlapp/
-├── mlapp/                # Configuración principal de Django
-├── templates/            # Plantillas HTML
-├── static/               # Archivos estáticos (CSS, JS, imágenes)
-├── views.py              # Lógica de las vistas
-├── forms.py              # Formularios (UploadCSVForm)
-├── models.py             # Modelos de Django (si aplica)
-└── ...
-```
-
----
-
-## 🛠 Tecnologías usadas
-
-- 🐍 Python 3.13
-- 🌐 Django 5.2.6
-- 📦 Scikit-learn (u otra librería de ML)
-- 📊 Pandas / Numpy
-
----
-
-## 🤝 Contribuciones
-
-¡Las contribuciones son bienvenidas! 🎉
-
-1. Haz un fork del repositorio
-2. Crea una rama con tu feature/fix
-3. Haz un Pull Request
-
----
-
-## 📜 Licencia
-
-Este proyecto está bajo la licencia **MIT**.
-
----
-
-💡 Hecho con pasión por los datos y el universo ✨🪐
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

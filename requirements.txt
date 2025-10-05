@@ -1,9 +1,0 @@
-Django
-scikit-learn
-pandas
-joblib
-
-# Opcionales si quieres gráficos / pruebas en notebooks
-matplotlib
-seaborn
-jupyter

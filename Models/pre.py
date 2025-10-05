@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Editor de Spyder
-
-Este es un archivo temporal.
-"""
-
 # ============================================================================
 # ETAPA 1: IMPORTACIÓN DE LIBRERÍAS
 # ============================================================================
@@ -12,13 +6,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, RobustScaler
 from sklearn.impute import SimpleImputer, KNNImputer
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.cluster import KMeans
-from sklearn.metrics import (classification_report, confusion_matrix, 
-                             roc_auc_score, roc_curve, precision_recall_curve)
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
 import warnings
@@ -49,7 +39,7 @@ def cargar_datos(ruta_archivo):
     print(f"✓ Datos cargados: {df.shape[0]} filas, {df.shape[1]} columnas")
     return df
 
-def exploracion_inicial(df):
+def exploracion_inicial(df, nombre_variable_objetivo = "koi_disposition"):
     """
     Realiza exploración inicial del dataset
     """
@@ -81,23 +71,23 @@ def exploracion_inicial(df):
     print(missing_df[missing_df['Faltantes'] > 0].sort_values('Faltantes', ascending=False))
     
     # Distribución de la variable objetivo
-    if 'koi_disposition' in df.columns:
-        print("\n5. Distribución de la variable objetivo (koi_disposition):")
-        print(df['koi_disposition'].value_counts())
+    if nombre_variable_objetivo in df.columns:
+        print(f"\n5. Distribución de la variable objetivo ({nombre_variable_objetivo}):")
+        print(df[nombre_variable_objetivo].value_counts())
         print("\nPorcentajes:")
-        print(df['koi_disposition'].value_counts(normalize=True) * 100)
+        print(df[nombre_variable_objetivo].value_counts(normalize=True) * 100)
 
 # Ejemplo de uso:
 # df = cargar_datos('cumulative.csv')
 # exploracion_inicial(df)
-df = cargar_datos('cumulative.csv')
-exploracion_inicial(df)
+#df = cargar_datos('cumulative.csv')
+#exploracion_inicial(df)
 
 # ============================================================================
 # ETAPA 3: PREPARACIÓN DE LA VARIABLE OBJETIVO
 # ============================================================================
 
-def preparar_variable_objetivo(df):
+def preparar_variable_objetivo(df, nombre_variable_objetivo = "koi_disposition"):
     """
     Convierte la variable objetivo en binaria:
     - CONFIRMED = 1 (es exoplaneta)
@@ -116,13 +106,13 @@ def preparar_variable_objetivo(df):
     df_prep = df.copy()
     
     # Verificar columna de disposición
-    if 'koi_disposition' not in df_prep.columns:
-        print("⚠ Columna 'koi_disposition' no encontrada. Columnas disponibles:")
+    if nombre_variable_objetivo not in df_prep.columns:
+        print(f"⚠ Columna '{nombre_variable_objetivo}' no encontrada. Columnas disponibles:")
         print(df_prep.columns.tolist())
         return df_prep
     
     # Crear variable binaria
-    df_prep['es_exoplaneta'] = (df_prep['koi_disposition'] == 'CONFIRMED').astype(int)
+    df_prep['es_exoplaneta'] = (df_prep[nombre_variable_objetivo] == 'CONFIRMED').astype(int)
     
     print("\n✓ Variable objetivo creada:")
     print(f"  - Exoplanetas confirmados (1): {df_prep['es_exoplaneta'].sum()}")
@@ -130,47 +120,34 @@ def preparar_variable_objetivo(df):
     print(f"  - Proporción de exoplanetas: {df_prep['es_exoplaneta'].mean():.2%}")
     
     return df_prep
-df_prep = preparar_variable_objetivo(df)
+# df_prep = preparar_variable_objetivo(df)
 # ============================================================================
 # ETAPA 4: SELECCIÓN DE FEATURES
 # ============================================================================
 
-def seleccionar_features(df):
-    """
-    Selecciona las features más relevantes para el modelo.
+def seleccionar_features(df, nombre_features = [
+    'koi_period',
+    'koi_impact',
+    'koi_duration',
+    'koi_depth',
+    'koi_prad',
+    'koi_teq',
+    'koi_insol',
+    'koi_model_snr',
+    'koi_slogg',
+    'koi_srad'
+    ]):
     
-    Features importantes en KOI:
-    - koi_period: Período orbital
-    - koi_depth: Profundidad del tránsito
-    - koi_duration: Duración del tránsito
-    - koi_prad: Radio del planeta
-    - koi_teq: Temperatura de equilibrio
-    - koi_insol: Insolación
-    - koi_steff: Temperatura efectiva de la estrella
-    - koi_srad: Radio de la estrella
+    """
+    Toma las features que definió el usuario y devuelve el dataset solamente 
+    con las columnas escogidas
     """
     print("\n" + "="*60)
     print("SELECCIÓN DE FEATURES")
     print("="*60)
     
-    # Features numéricas importantes (estas pueden variar según el dataset exacto)
-    features_importantes = [
-        'koi_period', 'koi_period_err1', 'koi_period_err2',
-        'koi_time0bk', 'koi_time0bk_err1', 'koi_time0bk_err2',
-        'koi_impact', 'koi_impact_err1', 'koi_impact_err2',
-        'koi_duration', 'koi_duration_err1', 'koi_duration_err2',
-        'koi_depth', 'koi_depth_err1', 'koi_depth_err2',
-        'koi_prad', 'koi_prad_err1', 'koi_prad_err2',
-        'koi_teq', 'koi_teq_err1', 'koi_teq_err2',
-        'koi_insol', 'koi_insol_err1', 'koi_insol_err2',
-        'koi_model_snr', 'koi_steff', 'koi_steff_err1', 'koi_steff_err2',
-        'koi_slogg', 'koi_slogg_err1', 'koi_slogg_err2',
-        'koi_srad', 'koi_srad_err1', 'koi_srad_err2',
-        'ra', 'dec', 'koi_kepmag'
-    ]
-    
     # Filtrar solo las columnas que existen en el dataset
-    features_disponibles = [f for f in features_importantes if f in df.columns]
+    features_disponibles = [f for f in nombre_features if f in df.columns]
     
     print(f"✓ Features seleccionadas: {len(features_disponibles)}")
     print(f"  Disponibles de la lista: {features_disponibles[:10]}...")
@@ -183,7 +160,7 @@ def seleccionar_features(df):
         print("\n⚠ Variable objetivo no encontrada. Asegúrate de ejecutar preparar_variable_objetivo() primero.")
     
     return df_features, features_disponibles
-df_features, features_disponibles = seleccionar_features(df_prep)
+#df_features, features_disponibles = seleccionar_features(df_prep)
 
 # ============================================================================
 # ETAPA 5: MANEJO DE VALORES FALTANTES
@@ -267,7 +244,7 @@ def manejar_valores_faltantes(df, estrategia='knn', umbral_columna=0.2):
         return df_final
     else:
         return X_imputed
-df_final = manejar_valores_faltantes (df_features)
+#df_final = manejar_valores_faltantes (df_features)
 
 # ============================================================================
 # ETAPA 6: DETECCIÓN DE OUTLIERS
@@ -309,7 +286,7 @@ def detectar_outliers(df, columnas=None, max_mostrar=10):
     
     return resumen_outliers
 # Ejemplo de uso después del manejo de faltantes
-resumen_outliers = detectar_outliers(df_final, columnas=['koi_prad','koi_period','koi_teq'])
+#resumen_outliers = detectar_outliers(df_final, columnas=['koi_prad','koi_period','koi_teq'])
 
 # ============================================================================
 # ETAPA 7: ESCALADO Y NORMALIZACIÓN
@@ -362,9 +339,9 @@ def escalar_datos(df, metodo='robust'):
         X_scaled['es_exoplaneta'] = y
     
     return X_scaled, scaler
-df_escalado, scaler = escalar_datos(df_final, metodo='robust')
-X = df_escalado.drop('es_exoplaneta', axis=1)
-y = df_escalado['es_exoplaneta']
+#df_escalado, scaler = escalar_datos(df_final, metodo='robust')
+#X = df_escalado.drop('es_exoplaneta', axis=1)
+#y = df_escalado['es_exoplaneta']
 
 # ============================================================================
 # ETAPA 8: BALANCEO DE CLASES
@@ -383,7 +360,7 @@ def balancear_clases(X, y, metodo='smote'):
     print("BALANCEO DE CLASES")
     print("="*60)
     
-    print(f"\nDistribución original:")
+    print("\nDistribución original:")
     print(f"  Clase 0: {(y == 0).sum()} ({(y == 0).mean():.2%})")
     print(f"  Clase 1: {(y == 1).sum()} ({(y == 1).mean():.2%})")
     
@@ -412,12 +389,12 @@ def balancear_clases(X, y, metodo='smote'):
         print(f"⚠ Método '{metodo}' no reconocido. No se aplicó balanceo.")
         return X, y
     
-    print(f"\nDistribución balanceada:")
+    print("\nDistribución balanceada:")
     print(f"  Clase 0: {(y_balanced == 0).sum()} ({(y_balanced == 0).mean():.2%})")
     print(f"  Clase 1: {(y_balanced == 1).sum()} ({(y_balanced == 1).mean():.2%})")
     
     return X_balanced, y_balanced
-X_bal, y_bal = balancear_clases(X, y, metodo='smote')
+#X_bal, y_bal = balancear_clases(X, y, metodo='smote')
 
 
 # ============================================================================
@@ -444,19 +421,83 @@ def dividir_datos(df, test_size=0.2, random_state=42):
         stratify=y  # Mantiene la proporción de clases
     )
     
-    print(f"\n✓ División completada:")
+    print("\n✓ División completada:")
     print(f"   - Entrenamiento: {X_train.shape[0]} muestras ({(1-test_size)*100:.0f}%)")
     print(f"   - Prueba: {X_test.shape[0]} muestras ({test_size*100:.0f}%)")
-    print(f"\n   Distribución en entrenamiento:")
+    print("\n   Distribución en entrenamiento:")
     print(f"     Clase 0: {(y_train == 0).sum()} ({(y_train == 0).mean():.2%})")
     print(f"     Clase 1: {(y_train == 1).sum()} ({(y_train == 1).mean():.2%})")
-    print(f"\n   Distribución en prueba:")
+    print("\n   Distribución en prueba:")
     print(f"     Clase 0: {(y_test == 0).sum()} ({(y_test == 0).mean():.2%})")
     print(f"     Clase 1: {(y_test == 1).sum()} ({(y_test == 1).mean():.2%})")
     
     return X_train, X_test, y_train, y_test
-X_train, X_test, y_train, y_test = dividir_datos(
-    pd.concat([X_bal, y_bal], axis=1), 
-    test_size=0.2, 
-    random_state=42
-    )
+#X_train, X_test, y_train, y_test = dividir_datos(
+#    pd.concat([X_bal, y_bal], axis=1), 
+#    test_size=0.2, 
+#    random_state=42
+#    )
+
+def pipeline_completo(ruta_archivo, nombre_variable_objetivo = "koi_disposition",
+                nombres_features = [
+                'koi_period',
+                'koi_impact',
+                'koi_duration',
+                'koi_depth',
+                'koi_prad',
+                'koi_teq',
+                'koi_insol',
+                'koi_model_snr',
+                'koi_slogg',
+                'koi_srad'
+                ], estrategia_valores_faltantes = 'knn', metodo_escalado = 'robust',
+                                  metodo_balance = 'smote'):
+    """
+    Ejecuta el pipeline completo de principio a fin.
+    
+    USO:
+    pipeline_completo('ruta/al/archivo/cumulative.csv')
+    """
+    print("\n" + "="*70)
+    print(" "*15 + "PIPELINE DE DETECCIÓN DE EXOPLANETAS")
+    print("="*70)
+    
+    # 1. Cargar datos
+    df = cargar_datos(ruta_archivo)
+    exploracion_inicial(df)
+    
+    # 2. Preparar variable objetivo
+    df = preparar_variable_objetivo(df, nombre_variable_objetivo)
+    
+    # 3. Seleccionar features
+    df_features, features = seleccionar_features(df, nombres_features)
+    
+    # 4. Manejar valores faltantes
+    df_clean = manejar_valores_faltantes(df_features, estrategia_valores_faltantes)
+    
+    # 5. Detectar outliers (solo informativo)
+    detectar_outliers(df_clean)
+    
+    # 6. Escalar datos
+    df_scaled, scaler = escalar_datos(df_clean, metodo_escalado)
+    
+    # 7. Dividir datos
+    X_train, X_test, y_train, y_test = dividir_datos(df_scaled)
+    
+    # 8. Balancear clases (opcional, comentar si no se desea)
+    X_train_bal, y_train_bal = balancear_clases(X_train, y_train, metodo_balance)
+    
+    print("\n" + "="*70)
+    print(" "*20 + "PIPELINE COMPLETADO")
+    print("="*70)
+    
+    return {
+        'datos_limpios': df_clean,
+        'datos_escalados': df_scaled,
+        'X_train': X_train_bal,
+        'X_test': X_test,
+        'y_train': y_train_bal,
+        'y_test': y_test,
+        'scaler': scaler,
+        'feature_names': features
+    }

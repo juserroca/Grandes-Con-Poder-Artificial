@@ -449,7 +449,7 @@ def main():
     print("=" * 60)
     
     # Pipeline de procesamiento
-    resultados = pre.pipeline_completo('kcumulative.csv')
+    resultados = pre.pipeline_completo('cumulative.csv')
     X_train = resultados['X_train']
     X_test = resultados['X_test']
     y_train = resultados['y_train']
